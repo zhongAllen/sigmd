@@ -26,7 +26,7 @@ module.exports = {
   // whether to use eslint-loader for lint on save.
   // valid values: true | false | 'error'
   // when set to 'error', lint errors will cause compilation to fail.
-  lintOnSave: true,
+  lintOnSave: !isProductionEnvFlag,
 
   // https://cli.vuejs.org/config/#runtimecompiler
   runtimeCompiler: false,
@@ -66,7 +66,6 @@ module.exports = {
       })
 
     // 修改 babel-loader 配置
-    config.module.rules.delete('js')
     config.module
       .rule('js')
       .test(/\.js$/)
@@ -75,6 +74,7 @@ module.exports = {
       .options({
         presets: ['@vue/app']
       })
+      .end()
 
     const splitOptions = config.optimization.get('splitChunks')
     config.optimization.splitChunks(
@@ -117,10 +117,18 @@ module.exports = {
         .plugin('webpack-bundle-analyzer')
         .use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
     }
+
+    // 移除 eslint-loader
+    if (isProductionEnvFlag) {
+      config.module.rules.delete('eslint')
+    }
   },
 
   configureWebpack: {
     plugins: [isProductionEnvFlag ? new SizePlugin() : () => {}],
+    module: {
+      rules: []
+    }
   },
 
   // use thread-loader for babel & TS in production build
