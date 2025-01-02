@@ -26,7 +26,7 @@ module.exports = {
   // whether to use eslint-loader for lint on save.
   // valid values: true | false | 'error'
   // when set to 'error', lint errors will cause compilation to fail.
-  lintOnSave: !isProductionEnvFlag,
+  lintOnSave: false,
 
   // https://cli.vuejs.org/config/#runtimecompiler
   runtimeCompiler: false,
@@ -43,6 +43,7 @@ module.exports = {
   // tweak internal webpack configuration.
   // see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
   chainWebpack: (config) => {
+    // 设置别名
     config.resolve.alias
       .set('vue$', 'vue/dist/vue.esm.js')
       .set('@helper', resolveRealPath('src/helper'))
@@ -53,8 +54,22 @@ module.exports = {
       .set('@mixins', resolveRealPath('src/mixins'))
       .set('@components', resolveRealPath('src/components'))
 
-    // 移除旧的 svg 规则
-    config.module.rules.delete('svg')
+    // 清除所有已存在的规则
+    config.module.rules.clear()
+
+    // 添加新的规则
+    config.module
+      .rule('vue')
+      .test(/\.vue$/)
+      .use('vue-loader')
+      .loader('vue-loader')
+
+    config.module
+      .rule('js')
+      .test(/\.js$/)
+      .use('babel-loader')
+      .loader('babel-loader')
+
     config.module
       .rule('svg')
       .test(/\.svg$/)
@@ -62,73 +77,39 @@ module.exports = {
       .loader('svg-sprite-loader')
       .options({
         name: '[name]-[hash:7]',
-        prefixize: true,
+        prefixize: true
       })
 
-    // 修改 babel-loader 配置
-    config.module
-      .rule('js')
-      .test(/\.js$/)
-      .use('babel-loader')
-      .loader('babel-loader')
-      .options({
-        presets: ['@vue/app']
-      })
-      .end()
-
-    const splitOptions = config.optimization.get('splitChunks')
-    config.optimization.splitChunks(
-      Object.assign({}, splitOptions, {
-        // （缺省值5）按需加载时的最大并行请求数
-        maxAsyncRequests: 16,
-        // （默认值3）入口点上的最大并行请求数
-        maxInitialRequests: 16,
-        // （默认值：1）分割前共享模块的最小块数
-        minChunks: 1,
-        // （默认值：30000）块的最小大小
-        minSize: 30000,
-        // webpack 将使用块的起源和名称来生成名称: `vendors~main.js`,如项目与"~"冲突，则可通过此值修改，Eg: '-'
-        automaticNameDelimiter: '~',
-        // cacheGroups is an object where keys are the cache group names.
-        name: true,
-        cacheGroups: {
-          default: false,
-          common: {
-            name: `chunk-common`,
-            minChunks: 2,
-            priority: -20,
-            chunks: 'initial',
-            reuseExistingChunk: true,
-          },
-          element: {
-            name: 'element',
-            test: /[\\/]node_modules[\\/]element-ui[\\/]/,
-            chunks: 'initial',
-            // 默认组的优先级为负数，以允许任何自定义缓存组具有更高的优先级（默认值为0）
-            priority: -30,
-          },
+    // 优化分块配置
+    config.optimization.splitChunks({
+      chunks: 'all',
+      minSize: 30000,
+      maxSize: 0,
+      minChunks: 1,
+      maxAsyncRequests: 16,
+      maxInitialRequests: 16,
+      automaticNameDelimiter: '~',
+      name: true,
+      cacheGroups: {
+        common: {
+          name: `chunk-common`,
+          minChunks: 2,
+          priority: -20,
+          chunks: 'initial',
+          reuseExistingChunk: true
         },
-      })
-    )
-
-    // https://github.com/webpack-contrib/webpack-bundle-analyzer
-    if (process.env.npm_config_report) {
-      config
-        .plugin('webpack-bundle-analyzer')
-        .use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
-    }
-
-    // 移除 eslint-loader
-    if (isProductionEnvFlag) {
-      config.module.rules.delete('eslint')
-    }
+        element: {
+          name: 'element',
+          test: /[\\/]node_modules[\\/]element-ui[\\/]/,
+          chunks: 'initial',
+          priority: -30
+        }
+      }
+    })
   },
 
   configureWebpack: {
-    plugins: [isProductionEnvFlag ? new SizePlugin() : () => {}],
-    module: {
-      rules: []
-    }
+    plugins: [isProductionEnvFlag ? new SizePlugin() : () => {}]
   },
 
   // use thread-loader for babel & TS in production build
