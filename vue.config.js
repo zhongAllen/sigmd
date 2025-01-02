@@ -38,7 +38,7 @@ module.exports = {
   ],
 
   // generate sourceMap for production build?
-  productionSourceMap: process.env.NODE_ENV !== 'production',
+  productionSourceMap: false,
 
   // tweak internal webpack configuration.
   // see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
@@ -106,6 +106,19 @@ module.exports = {
         .plugin('webpack-bundle-analyzer')
         .use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
     }
+
+    // 清除已存在的 babel-loader 规则
+    config.module.rules.delete('babel-loader')
+    
+    // 重新添加 babel-loader 规则
+    config.module
+      .rule('js')
+      .test(/\.js$/)
+      .use('babel-loader')
+      .loader('babel-loader')
+      .options({
+        presets: ['@vue/app']
+      })
   },
 
   configureWebpack: {
