@@ -1,7 +1,7 @@
 {
   "version": 2,
   "buildCommand": "npm run build",
-  "installCommand": "npm install --registry=https://registry.npmjs.org/",
+  "installCommand": "npm install --registry=https://registry.npmjs.org/ --legacy-peer-deps",
   "devCommand": "npm run serve",
   "routes": [
     { "src": "/(.*)", "dest": "/" }
