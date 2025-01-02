@@ -114,11 +114,15 @@ module.exports = {
     config.module
       .rule('js')
       .test(/\.js$/)
+      .include
+        .add(path.resolve(__dirname, 'src'))
+        .end()
       .use('babel-loader')
-      .loader('babel-loader')
-      .options({
-        presets: ['@vue/app']
-      })
+        .loader('babel-loader')
+        .options({
+          presets: ['@vue/app']
+        })
+        .end()
   },
 
   configureWebpack: {
