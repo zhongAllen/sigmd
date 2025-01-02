@@ -6,7 +6,7 @@
 
 <script>
 import PreviewVditor from '@components/PreviewVditor'
-import AboutAryaMd from '@config/aboutArya'
+import AboutSigmateMd from '@config/aboutSigmate'
 
 export default {
   name: 'about-arya',
@@ -14,7 +14,7 @@ export default {
   data() {
     return {
       isLoading: true,
-      pdata: AboutAryaMd
+      pdata: AboutSigmateMd
     }
   },
 

@@ -35,7 +35,10 @@
     "vditor": "3.8.15",
     "vue": "^2.5.17",
     "vue-meta": "^2.2.2",
-    "vue-router": "^3.1.3"
+    "vue-router": "^3.1.3",
+    "@babel/core": "^7.22.0",
+    "eslint": "^8.0.0",
+    "webpack": "^5.0.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.11.0",
@@ -137,5 +140,8 @@
     "**/**.{js,json,pcss,vue,css,scss}": [
       "prettier --write"
     ]
+  },
+  "engines": {
+    "node": ">=22.0.0"
   }
 }
