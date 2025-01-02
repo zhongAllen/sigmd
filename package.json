@@ -19,7 +19,9 @@
     "eslint-fix": "eslint src/**/**/*.vue --fix",
     "format-code": "prettier-eslint --write \"src/**/*.{js,vue,css,scss}\"",
     "precommit-msg": "echo '🐉 Start pre-commit checks...' && exit 0",
-    "preview": "node ./commands/preview.js"
+    "preview": "node ./commands/preview.js",
+    "install": "npm install --registry=https://registry.npmjs.org/",
+    "ci": "npm ci --registry=https://registry.npmjs.org/"
   },
   "dependencies": {
     "canvg": "^2.0.0",
@@ -143,5 +145,8 @@
   },
   "engines": {
     "node": ">=22.0.0"
+  },
+  "resolutions": {
+    "@babel/core": "^7.22.0"
   }
 }
