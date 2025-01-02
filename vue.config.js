@@ -2,6 +2,7 @@
 
 const path = require('path')
 const SizePlugin = require('size-plugin')
+const { VueLoaderPlugin } = require('vue-loader')
 
 const isProductionEnvFlag = process.env.NODE_ENV === 'production'
 
@@ -54,22 +55,37 @@ module.exports = {
       .set('@mixins', resolveRealPath('src/mixins'))
       .set('@components', resolveRealPath('src/components'))
 
-    // 清除所有已存在的规则
-    config.module.rules.clear()
+    // 确保添加 VueLoaderPlugin
+    config
+      .plugin('vue-loader')
+      .use(VueLoaderPlugin)
+      .end()
 
-    // 添加新的规则
+    // 配置 vue-loader
     config.module
       .rule('vue')
       .test(/\.vue$/)
       .use('vue-loader')
       .loader('vue-loader')
+      .options({
+        compilerOptions: {
+          preserveWhitespace: false
+        }
+      })
+      .end()
 
+    // 配置 babel-loader
     config.module
       .rule('js')
       .test(/\.js$/)
       .use('babel-loader')
       .loader('babel-loader')
+      .options({
+        presets: ['@vue/app']
+      })
+      .end()
 
+    // 配置 svg-loader
     config.module
       .rule('svg')
       .test(/\.svg$/)
@@ -79,6 +95,18 @@ module.exports = {
         name: '[name]-[hash:7]',
         prefixize: true
       })
+      .end()
+
+    // 配置 css 相关 loader
+    const cssRule = config.module.rule('css')
+    cssRule.uses.clear()
+    cssRule
+      .use('vue-style-loader')
+      .loader('vue-style-loader')
+      .end()
+      .use('css-loader')
+      .loader('css-loader')
+      .end()
 
     // 优化分块配置
     config.optimization.splitChunks({
