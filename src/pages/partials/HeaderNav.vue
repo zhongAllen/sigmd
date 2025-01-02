@@ -61,10 +61,8 @@
             <icon class="header-icon" name="author" />
           </span>
         </a>
-        <router-link to="/about-arya" class="header-link">
-          <span class="hint--bottom" aria-label="关于 Arya">
-            <icon class="header-icon" name="document" />
-          </span>
+        <router-link to="/about-sigmate" class="header-link">
+          <span class="hint--bottom" aria-label="关于 Sigmate Markdown">关于</span>
         </router-link>
         <!-- <span class="hint--bottom" @click="onThemeClick" aria-label="变更主题">
           <icon class="header-icon" name="adjust" />

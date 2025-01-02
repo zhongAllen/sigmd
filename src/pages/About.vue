@@ -9,7 +9,7 @@ import PreviewVditor from '@components/PreviewVditor'
 import AboutSigmateMd from '@config/aboutSigmate'
 
 export default {
-  name: 'about-arya',
+  name: 'about-sigmate',
 
   data() {
     return {
