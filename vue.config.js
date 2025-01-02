@@ -53,7 +53,7 @@ module.exports = {
       .set('@mixins', resolveRealPath('src/mixins'))
       .set('@components', resolveRealPath('src/components'))
 
-    // remove the old loader & add new one
+    // 移除旧的 svg 规则
     config.module.rules.delete('svg')
     config.module
       .rule('svg')
@@ -63,6 +63,17 @@ module.exports = {
       .options({
         name: '[name]-[hash:7]',
         prefixize: true,
+      })
+
+    // 修改 babel-loader 配置
+    config.module.rules.delete('js')
+    config.module
+      .rule('js')
+      .test(/\.js$/)
+      .use('babel-loader')
+      .loader('babel-loader')
+      .options({
+        presets: ['@vue/app']
       })
 
     const splitOptions = config.optimization.get('splitChunks')
@@ -106,23 +117,6 @@ module.exports = {
         .plugin('webpack-bundle-analyzer')
         .use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
     }
-
-    // 清除已存在的 babel-loader 规则
-    config.module.rules.delete('babel-loader')
-    
-    // 重新添加 babel-loader 规则
-    config.module
-      .rule('js')
-      .test(/\.js$/)
-      .include
-        .add(path.resolve(__dirname, 'src'))
-        .end()
-      .use('babel-loader')
-        .loader('babel-loader')
-        .options({
-          presets: ['@vue/app']
-        })
-        .end()
   },
 
   configureWebpack: {
